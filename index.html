@@ -291,6 +291,26 @@
     z-index:50;
   }
   .toast.show{opacity:1; transform:translate(-50%, 0);}
+
+  /* STAMPA / PDF */
+  .print-header{display:none;}
+  @media print{
+    body{background:#fff;}
+    .app{box-shadow:none; max-width:100%; background:#fff;}
+    header, .week-tabs, .day-tabs, .install-banner, .toast, .no-print{display:none !important;}
+    .day-panel{padding:0 6mm;}
+    .print-header{display:block; margin-bottom:16px;}
+    .print-header .pt-title{font-family:'Fraunces',serif; font-weight:700; font-size:21px; color:#000;}
+    .print-header .pt-sub{font-family:'IBM Plex Mono',monospace; font-size:11px; color:#555; margin-top:2px;}
+    .meal-title .label{color:#000 !important;}
+    .meal-title .rule{background:#000;}
+    .stamp{border-color:#000 !important; background:#fff !important;}
+    .stamp::after{display:none !important;}
+    .item{border-bottom:1px solid #ccc; break-inside:avoid;}
+    .item-text{color:#000 !important; text-decoration:none !important;}
+    .item-text .qty{color:#000 !important;}
+    .meal{break-inside:avoid;}
+  }
 </style>
 </head>
 <body>
@@ -517,25 +537,6 @@ function aggregateWeek(w){
   return map;
 }
 
-function downloadShoppingList(w){
-  const map = aggregateWeek(w);
-  let text = `LISTA DELLA SPESA — Settimana ${w+1}\n${'='.repeat(32)}\n\n`;
-  CATEGORY_ORDER.forEach(cat=>{
-    const items = Object.values(map).filter(i=>i.category===cat);
-    if(!items.length) return;
-    text += `${cat.toUpperCase()}\n`;
-    items.forEach(i=> text += `[ ] ${i.name} — ${formatQtys(i.qtys)}\n`);
-    text += `\n`;
-  });
-  const blob = new Blob([text], {type:'text/plain'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `lista-spesa-settimana-${w+1}.txt`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
 // ---------- STATO (localStorage, condiviso via installazione su entrambi i telefoni) ----------
 const STORE_KEY = "menu-goloso-stato-v2";
 function loadState(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }catch(e){ return {}; } }
@@ -611,8 +612,14 @@ function mealBlock(dayIdx, mealKey, mealLabel, meal){
 function renderSpesa(){
   panelEl.innerHTML = "";
 
+  const today = new Date().toLocaleDateString('it-IT', {day:'2-digit', month:'long', year:'numeric'});
+  const ph = document.createElement('div');
+  ph.className = 'print-header';
+  ph.innerHTML = `<div class="pt-title">Lista della spesa — Settimana ${activeWeek+1}</div><div class="pt-sub">Il Nostro Menù · generata il ${today}</div>`;
+  panelEl.appendChild(ph);
+
   const topRow = document.createElement('div');
-  topRow.className = 'progress-row';
+  topRow.className = 'progress-row no-print';
   topRow.innerHTML = `<span>Lista spesa · Settimana ${activeWeek+1}</span>`;
   const dl = document.createElement('button');
   dl.className = 'btn-ghost';
@@ -620,8 +627,8 @@ function renderSpesa(){
   dl.style.color = 'var(--ink)';
   dl.style.borderColor = 'var(--basil)';
   dl.style.background = 'var(--paper-dim)';
-  dl.textContent = '⬇ Scarica';
-  dl.onclick = ()=> { downloadShoppingList(activeWeek); showToast('Lista scaricata'); };
+  dl.textContent = '📄 Stampa / PDF';
+  dl.onclick = ()=> window.print();
   topRow.appendChild(dl);
   panelEl.appendChild(topRow);
 
