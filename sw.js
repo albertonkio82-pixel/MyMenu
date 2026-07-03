@@ -1,4 +1,4 @@
-const CACHE = "menu-goloso-v2";
+const CACHE = "menu-goloso-v3";
 const ASSETS = [
   "./",
   "./index.html",
