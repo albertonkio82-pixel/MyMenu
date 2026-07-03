@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Il Nostro Menù</title>
+<meta name="description" content="Menu settimanale condiviso">
+<meta name="theme-color" content="#4B5D3A">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Il Nostro Menù">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F7F0DE;
+    --paper-dim:#EFE5C8;
+    --ink:#2B2118;
+    --ink-soft:#6b5f4d;
+    --basil:#4B5D3A;
+    --basil-dark:#37452a;
+    --ochre:#C98A2B;
+    --rust:#A64B2A;
+    --line:#DDD0B0;
+    --radius:14px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--basil-dark);}
+  body{
+    font-family:'Work Sans',sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  .app{
+    max-width:560px;
+    margin:0 auto;
+    background:var(--paper);
+    min-height:100vh;
+    box-shadow:0 0 40px rgba(0,0,0,.25);
+    padding-top:env(safe-area-inset-top);
+  }
+
+  /* HEADER */
+  header{
+    padding:22px 20px 14px;
+    background:var(--basil);
+    color:var(--paper);
+    border-bottom:4px solid var(--ochre);
+  }
+  header .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    opacity:.75;
+  }
+  header h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:28px;
+    margin:2px 0 4px;
+    letter-spacing:-.01em;
+  }
+  header p{margin:0; font-size:13.5px; opacity:.85;}
+  .header-actions{display:flex; gap:8px; margin-top:14px;}
+  .btn-ghost{
+    flex:1;
+    background:rgba(247,240,222,.12);
+    border:1px solid rgba(247,240,222,.35);
+    color:var(--paper);
+    padding:9px 10px;
+    border-radius:10px;
+    font-family:'Work Sans',sans-serif;
+    font-size:13px;
+    font-weight:500;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:6px;
+  }
+  .btn-ghost:active{background:rgba(247,240,222,.22);}
+
+  /* TABS SETTIMANE */
+  .week-tabs{
+    display:flex;
+    gap:6px;
+    padding:16px 16px 0;
+  }
+  .week-tab{
+    flex:1;
+    padding:9px 6px;
+    border-radius:10px;
+    border:none;
+    background:var(--paper-dim);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:500;
+    color:var(--ink-soft);
+    cursor:pointer;
+    text-align:center;
+  }
+  .week-tab.active{
+    background:var(--basil);
+    color:var(--paper);
+  }
+
+  /* TABS GIORNI */
+  .day-tabs{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding:14px 16px 6px;
+    scrollbar-width:none;
+  }
+  .day-tabs::-webkit-scrollbar{display:none;}
+  .day-tab{
+    flex:0 0 auto;
+    padding:8px 14px;
+    border-radius:20px;
+    border:1.5px solid var(--line);
+    background:transparent;
+    font-family:'Work Sans',sans-serif;
+    font-weight:500;
+    font-size:13.5px;
+    color:var(--ink-soft);
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .day-tab.active{
+    background:var(--ink);
+    border-color:var(--ink);
+    color:var(--paper);
+  }
+
+  /* CONTENUTO GIORNO */
+  .day-panel{padding:6px 18px 40px;}
+  .progress-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:10px 0 20px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    color:var(--ink-soft);
+  }
+  .progress-track{
+    flex:1;
+    height:5px;
+    background:var(--paper-dim);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--ochre);
+    border-radius:3px;
+    transition:width .35s ease;
+  }
+
+  .meal{margin-bottom:26px;}
+  .meal-title{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    margin-bottom:8px;
+  }
+  .meal-title .label{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:18px;
+  }
+  .meal-title .rule{flex:1; height:1px; background:var(--line);}
+  .meal-name{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    font-style:italic;
+    margin:-4px 0 10px;
+  }
+
+  .item{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    padding:9px 0;
+    border-bottom:1px solid var(--paper-dim);
+    cursor:pointer;
+  }
+  .item:last-child{border-bottom:none;}
+  .stamp{
+    flex:0 0 auto;
+    width:22px; height:22px;
+    border-radius:50%;
+    border:2px solid var(--ochre);
+    margin-top:2px;
+    position:relative;
+    transition:background .15s ease, border-color .15s ease, transform .1s ease;
+  }
+  .item:active .stamp{transform:scale(.9);}
+  .item.done .stamp{
+    background:var(--ochre);
+    border-color:var(--ochre);
+  }
+  .item.done .stamp::after{
+    content:'';
+    position:absolute;
+    left:5px; top:9px;
+    width:9px; height:5px;
+    border-left:2px solid var(--paper);
+    border-bottom:2px solid var(--paper);
+    transform:rotate(-45deg);
+  }
+  .item-text{font-size:15px; line-height:1.35; padding-top:1px;}
+  .item.done .item-text{color:var(--ink-soft); text-decoration:line-through; text-decoration-color:var(--rust);}
+  .item-text .qty{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    color:var(--basil);
+    font-weight:500;
+  }
+  .item.done .item-text .qty{color:var(--ink-soft);}
+
+  .note-box{
+    margin-top:6px;
+    padding:10px 12px;
+    background:var(--paper-dim);
+    border-left:3px solid var(--basil);
+    border-radius:6px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    font-style:italic;
+  }
+
+  .condiment{
+    margin-top:8px;
+    padding-top:14px;
+    border-top:2px dashed var(--line);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    text-align:center;
+  }
+
+  /* INSTALL BANNER */
+  .install-banner{
+    position:sticky;
+    bottom:0;
+    margin:0 16px 16px;
+    background:var(--ink);
+    color:var(--paper);
+    border-radius:12px;
+    padding:12px 14px;
+    display:none;
+    align-items:center;
+    gap:10px;
+    font-size:13px;
+    box-shadow:0 6px 20px rgba(0,0,0,.3);
+  }
+  .install-banner.show{display:flex;}
+  .install-banner button{
+    background:var(--ochre);
+    color:var(--ink);
+    border:none;
+    padding:8px 12px;
+    border-radius:8px;
+    font-weight:600;
+    font-size:12.5px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .install-banner .close{
+    background:none; border:none; color:var(--paper); opacity:.6; font-size:16px; padding:2px 6px; cursor:pointer;
+  }
+
+  .toast{
+    position:fixed;
+    left:50%; bottom:24px;
+    transform:translate(-50%, 20px);
+    background:var(--ink);
+    color:var(--paper);
+    padding:10px 18px;
+    border-radius:24px;
+    font-size:13px;
+    opacity:0;
+    transition:opacity .25s ease, transform .25s ease;
+    pointer-events:none;
+    z-index:50;
+  }
+  .toast.show{opacity:1; transform:translate(-50%, 0);}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="eyebrow">Piano mensile · 4 settimane</div>
+    <h1>Il Nostro Menù</h1>
+    <p>Stessi alimenti e porzioni del piano nutrizionale — ricette diverse ogni settimana</p>
+    <div class="header-actions">
+      <button class="btn-ghost" id="shareBtn">↗ Condividi con Marta</button>
+      <button class="btn-ghost" id="resetBtn">↺ Azzera settimana</button>
+    </div>
+  </header>
+
+  <div class="week-tabs" id="weekTabs"></div>
+  <div class="day-tabs" id="dayTabs"></div>
+  <div class="day-panel" id="dayPanel"></div>
+
+  <div class="install-banner" id="installBanner">
+    <span>📲 Installa l'app sulla schermata Home per aprirla come un'app vera</span>
+    <button id="installBtn">Installa</button>
+    <button class="close" id="closeInstall">✕</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ---------- POOL RICETTE (4 varianti = 4 settimane, stessi alimenti/porzioni del piano nutrizionale) ----------
+const V = { // verdura standard, riusata ovunque
+  cotta: {t:"Verdura cotta condita", q:"porzione abbondante"},
+  crudaMista: {t:"Verdura cruda mista condita", q:"porzione abbondante"},
+  crudaFoglia: {t:"Verdura cruda in foglia condita", q:"porzione abbondante"}
+};
+const FRUTTA_ROT = [
+  "Frutta fresca (mela o pera)",
+  "Frutta fresca (kiwi o arancia)",
+  "Frutta fresca (uva o pesca)",
+  "Frutta fresca (frutti di bosco misti)"
+];
+
+const POOLS = {
+  colA:[ // colazione pane+marmellata
+    {name:"Caffè & marmellata", items:[{t:"Caffè",q:"1 tazzina"},{t:"Yogurt bianco 0,1",q:"125 ml"},{t:"Pane comune tostato",q:"50 g"},{t:"Marmellata",q:"2 cucchiaini"}]},
+    {name:"Caffè & crema Novi", items:[{t:"Caffè",q:"1 tazzina"},{t:"Yogurt bianco 0,1",q:"125 ml"},{t:"Pane cesareccio tostato",q:"50 g"},{t:"Crema Novi",q:"2 cucchiaini"}]},
+    {name:"Caffè & miele", items:[{t:"Caffè",q:"1 tazzina"},{t:"Yogurt bianco 0,1",q:"125 ml"},{t:"Pan di Casa",q:"1 fetta"},{t:"Miele",q:"2 cucchiaini"}]},
+    {name:"Caffè & fette biscottate", items:[{t:"Caffè",q:"1 tazzina"},{t:"Yogurt bianco 0,1",q:"125 ml"},{t:"Fette biscottate",q:"3 unità"},{t:"Marmellata",q:"2 cucchiaini"}]}
+  ],
+  colB:[ // yogurt greco bowl
+    {name:"Yogurt bowl al muesli", items:[{t:"Caffè",q:"1 tazzina"},{t:"Yogurt greco 2%",q:"1 vasetto"},{t:"Muesli",q:"4 cucchiai"},{t:"Filo di miele",q:"incluso in porzione"}]},
+    {name:"Yogurt bowl multigrain", items:[{t:"Caffè",q:"1 tazzina"},{t:"Yogurt greco 2%",q:"1 vasetto"},{t:"Cereali \"Multigrain\"",q:"5 cucchiai"},{t:"Filo di miele",q:"incluso in porzione"}]},
+    {name:"Yogurt bowl ai fiocchi d'avena", items:[{t:"Caffè",q:"1 tazzina"},{t:"Yogurt greco 2%",q:"1 vasetto"},{t:"Fiocchi di avena",q:"5 cucchiai"},{t:"Filo di miele",q:"incluso in porzione"}]},
+    {name:"Yogurt bowl ai cornflakes", items:[{t:"Caffè",q:"1 tazzina"},{t:"Yogurt greco 2%",q:"1 vasetto"},{t:"Fiocchi di mais (cornflakes)",q:"5 cucchiai"},{t:"Filo di miele",q:"incluso in porzione"}]}
+  ],
+  colC:[ // biscotti+latte
+    {name:"Biscotti PiùIntegrali", items:[{t:"Caffè",q:"1 tazzina"},{t:"Latte",q:"250 ml"},{t:"Biscotti PiùIntegrali Galbusera",q:"5 unità"}]},
+    {name:"Biscotti al cioccolato", items:[{t:"Caffè",q:"1 tazzina"},{t:"Latte",q:"250 ml"},{t:"Biscotti Magretti Frollino cioccolato",q:"6 unità"}]},
+    {name:"Gocciole", items:[{t:"Caffè",q:"1 tazzina"},{t:"Latte",q:"250 ml"},{t:"Gocciole cioccolato Pavesi",q:"3 unità"}]},
+    {name:"Biscotti Oro Saiwa", items:[{t:"Caffè",q:"1 tazzina"},{t:"Latte",q:"250 ml"},{t:"Biscotti Oro Saiwa Classico",q:"7 unità"}]}
+  ],
+  pMozza:[ // pranzo lunedì
+    {name:"Mozzarella in carrozza di verdure", items:[{t:"Mozzarella di vacca",q:"1 unità"},V.cotta,{t:"Pane integrale",q:"100 g"}], note:"Scalda la mozzarella 30 sec e adagiala sulla verdura ancora calda."},
+    {name:"Mozzarella con couscous alle erbe", items:[{t:"Mozzarella di vacca",q:"1 unità"},V.cotta,{t:"Couscous, crudo",q:"70 g"}]},
+    {name:"Mozzarella con insalata di orzo", items:[{t:"Mozzarella di vacca",q:"1 unità"},V.cotta,{t:"Orzo o farro",q:"70 g"}]},
+    {name:"Mozzarella con riso freddo condito", items:[{t:"Mozzarella di vacca",q:"1 unità"},V.cotta,{t:"Pasta o riso",q:"70 g"}]}
+  ],
+  pSalumi:[ // pranzo martedì
+    {name:"Bresaola e hummus", items:[{t:"Bresaola",q:"80 g"},{t:"Hummus di legumi",q:"150 g"},{t:"Pane integrale",q:"100 g"}]},
+    {name:"Speck e zuppa di legumi", items:[{t:"Speck",q:"80 g"},{t:"Zuppa di legumi",q:"150 g"},{t:"Pane integrale",q:"100 g"}]},
+    {name:"Prosciutto crudo e insalata di legumi", items:[{t:"Prosciutto crudo",q:"80 g"},{t:"Insalata di legumi",q:"150 g"},{t:"Pane comune",q:"100 g"}]},
+    {name:"Prosciutto cotto e burger di legumi", items:[{t:"Prosciutto cotto",q:"80 g"},{t:"Burger di legumi",q:"150 g"},{t:"Pan di Casa",q:"2 fette"}]}
+  ],
+  pCarne:[ // pranzo mercoledì
+    {name:"Pollo ai ferri con farro", items:[{t:"Petto di pollo ai ferri",q:"150 g"},V.crudaMista,{t:"Farro",q:"70 g"}]},
+    {name:"Tacchino ai ferri con orzo", items:[{t:"Petto di tacchino ai ferri",q:"150 g"},V.crudaMista,{t:"Orzo",q:"70 g"}]},
+    {name:"Bistecca ai ferri con patate", items:[{t:"Bistecca di manzo ai ferri",q:"150 g"},V.crudaFoglia,{t:"Patate",q:"250 g"}]},
+    {name:"Hamburger con couscous", items:[{t:"Hamburger da polpa scelta",q:"1 unità"},V.crudaMista,{t:"Couscous, crudo",q:"70 g"}]}
+  ],
+  pFarinata:[ // pranzo giovedì
+    {name:"Mozzarella con farinata di ceci", items:[{t:"Mozzarella di vacca",q:"1 unità"},V.cotta,{t:"Farinata di ceci",q:"50 g"}]},
+    {name:"Mozzarella con farinata al rosmarino", items:[{t:"Mozzarella di vacca",q:"1 unità"},V.cotta,{t:"Farinata di ceci al rosmarino",q:"50 g"}]},
+    {name:"Mozzarella con farinata e cipolla", items:[{t:"Mozzarella di vacca",q:"1 unità"},V.cotta,{t:"Farinata di ceci e cipolla",q:"50 g"}]},
+    {name:"Mozzarella con farinata e pepe nero", items:[{t:"Mozzarella di vacca",q:"1 unità"},V.cotta,{t:"Farinata di ceci e pepe nero",q:"50 g"}]}
+  ],
+  pLegumi:[ // pranzo venerdì
+    {name:"Burger di legumi", items:[{t:"Burger di legumi",q:"150 g"},V.crudaFoglia,{t:"Pane integrale",q:"100 g"}], note:"Frulla i legumi con spezie a piacere, forma i burger e cuoci in padella o al forno."},
+    {name:"Polpette di legumi", items:[{t:"Polpette di legumi",q:"150 g"},V.crudaMista,{t:"Pane integrale",q:"100 g"}]},
+    {name:"Hummus di ceci", items:[{t:"Hummus di ceci",q:"150 g"},V.crudaFoglia,{t:"Pane comune",q:"100 g"}]},
+    {name:"Zuppa di lenticchie", items:[{t:"Zuppa di lenticchie",q:"150 g"},V.crudaMista,{t:"Pan di Casa",q:"2 fette"}]}
+  ],
+  pTonno:[ // pranzo sabato
+    {name:"Tonno e pane croccante", items:[{t:"Tonno sott'olio sgocciolato",q:"80 g"},V.cotta,{t:"Pane comune tostato",q:"100 g"}]},
+    {name:"Bastoncini di pesce", items:[{t:"Bastoncini di pesce Findus Omega 3",q:"4 unità"},V.cotta,{t:"Patate",q:"250 g"}]},
+    {name:"Salmone affumicato", items:[{t:"Salmone affumicato",q:"80 g"},V.cotta,{t:"Pane integrale",q:"100 g"}]},
+    {name:"Tonno con farinata", items:[{t:"Tonno sott'olio sgocciolato",q:"80 g"},V.cotta,{t:"Farinata di ceci",q:"50 g"}]}
+  ],
+  pCarne2:[ // pranzo domenica
+    {name:"Bistecca con farro", items:[{t:"Bistecca di manzo ai ferri",q:"150 g"},V.crudaMista,{t:"Farro",q:"70 g"}]},
+    {name:"Pollo con patate", items:[{t:"Petto di pollo ai ferri",q:"150 g"},V.crudaMista,{t:"Patate",q:"250 g"}]},
+    {name:"Hamburger con riso", items:[{t:"Hamburger da polpa scelta",q:"1 unità"},V.crudaFoglia,{t:"Pasta o riso",q:"70 g"}]},
+    {name:"Tacchino con couscous", items:[{t:"Petto di tacchino ai ferri",q:"150 g"},V.crudaMista,{t:"Couscous, crudo",q:"70 g"}]}
+  ],
+  cLegumi:[ // cena lunedì
+    {name:"Zuppa di legumi", items:[{t:"Legumi",q:"150 g"},V.cotta,{t:"Pane integrale",q:"100 g"}]},
+    {name:"Hummus di legumi", items:[{t:"Hummus di legumi",q:"150 g"},V.cotta,{t:"Pane integrale",q:"100 g"}]},
+    {name:"Polpette di legumi", items:[{t:"Polpette di legumi",q:"150 g"},V.cotta,{t:"Pane comune",q:"100 g"}]},
+    {name:"Burger di legumi", items:[{t:"Burger di legumi",q:"150 g"},V.cotta,{t:"Pan di Casa",q:"2 fette"}]}
+  ],
+  cPesce:[ // cena martedì
+    {name:"Merluzzo mediterraneo", items:[{t:"Filetti di merluzzo con pomodori, olive e capperi",q:"400 g"},V.cotta], note:"Soffriggi cipolla e aglio, aggiungi pomodoro, filetti, olive e capperi. Cuoci a fiamma bassa col coperchio."},
+    {name:"Sogliola al vapore", items:[{t:"Sogliola al vapore con olio e prezzemolo",q:"180 g"},V.cotta,{t:"Pane integrale",q:"100 g"}]},
+    {name:"Merluzzo al basilico", items:[{t:"Filetti di merluzzo con pomodori, olive e capperi (variante al basilico)",q:"400 g"},V.cotta]},
+    {name:"Orata al vapore", items:[{t:"Orata al vapore con olio e prezzemolo",q:"180 g"},V.cotta,{t:"Pane integrale",q:"100 g"}]}
+  ],
+  cMozza:[ // cena mercoledì
+    {name:"Mozzarella semplice", items:[{t:"Mozzarella di vacca",q:"1 unità"},V.cotta,{t:"Pane integrale",q:"100 g"}]},
+    {name:"Mozzarella con couscous", items:[{t:"Mozzarella di vacca",q:"1 unità"},V.cotta,{t:"Couscous, crudo",q:"70 g"}]},
+    {name:"Mozzarella con orzo", items:[{t:"Mozzarella di vacca",q:"1 unità"},V.cotta,{t:"Orzo o farro",q:"70 g"}]},
+    {name:"Mozzarella con patate", items:[{t:"Mozzarella di vacca",q:"1 unità"},V.cotta,{t:"Patate",q:"250 g"}]}
+  ],
+  cUovo:[ // cena giovedì
+    {name:"Frittata", items:[{t:"Uovo di gallina",q:"2 unità"},V.cotta,{t:"Pane integrale",q:"100 g"}]},
+    {name:"Uova sode", items:[{t:"Uovo di gallina (sode)",q:"2 unità"},V.cotta,{t:"Pane integrale",q:"100 g"}]},
+    {name:"Uova all'occhio di bue", items:[{t:"Uovo di gallina",q:"2 unità"},V.cotta,{t:"Pane comune",q:"100 g"}]},
+    {name:"Frittata alle erbe", items:[{t:"Uovo di gallina",q:"2 unità"},V.cotta,{t:"Pan di Casa",q:"2 fette"}]}
+  ],
+  cCarne:[ // cena venerdì
+    {name:"Pollo ai ferri", items:[{t:"Petto di pollo ai ferri",q:"150 g"},V.cotta,{t:"Pane integrale",q:"100 g"}]},
+    {name:"Tacchino con patate", items:[{t:"Petto di tacchino ai ferri",q:"150 g"},V.cotta,{t:"Patate",q:"250 g"}]},
+    {name:"Bistecca ai ferri", items:[{t:"Bistecca di manzo ai ferri",q:"150 g"},V.cotta,{t:"Pane comune",q:"100 g"}]},
+    {name:"Hamburger con couscous", items:[{t:"Hamburger da polpa scelta",q:"1 unità"},V.cotta,{t:"Couscous, crudo",q:"70 g"}]}
+  ],
+  cPizza:[ // cena sabato — fissa, stessa ogni settimana
+    {name:"🍕 Serata libera", items:[{t:"Pizza margherita da pizzeria",q:"1 unità"}], note:"Ricordati di dimezzare l'olio EVO giornaliero, è già nell'impasto."}
+  ],
+  cPesce2:[ // cena domenica
+    {name:"Merluzzo al vapore", items:[{t:"Merluzzo al vapore con olio e prezzemolo",q:"180 g"},V.cotta]},
+    {name:"Sogliola mediterranea", items:[{t:"Filetti di sogliola con pomodori, olive e capperi",q:"400 g"},V.cotta]},
+    {name:"Orata al vapore", items:[{t:"Orata al vapore con olio e prezzemolo",q:"180 g"},V.cotta]},
+    {name:"Merluzzo mediterraneo", items:[{t:"Filetti di merluzzo con pomodori, olive e capperi",q:"400 g"},V.cotta]}
+  ]
+};
+
+// giorno -> quali pool usa per ciascun pasto + eventuale spuntino fisso
+const DAY_TEMPLATE = [
+  {day:"Lunedì",  short:"Lun", col:"colA", pranzo:"pMozza",    cena:"cLegumi", spuntinoExtra:null},
+  {day:"Martedì", short:"Mar", col:"colB", pranzo:"pSalumi",   cena:"cPesce",  spuntinoExtra:"yomo"},
+  {day:"Mercoledì",short:"Mer",col:"colC", pranzo:"pCarne",    cena:"cMozza",  spuntinoExtra:null},
+  {day:"Giovedì", short:"Gio", col:"colA", pranzo:"pFarinata", cena:"cUovo",   spuntinoExtra:null},
+  {day:"Venerdì", short:"Ven", col:"colB", pranzo:"pLegumi",   cena:"cCarne",  spuntinoExtra:"yomo"},
+  {day:"Sabato",  short:"Sab", col:"colC", pranzo:"pTonno",    cena:"cPizza",  spuntinoExtra:null},
+  {day:"Domenica",short:"Dom", col:"colA", pranzo:"pCarne2",   cena:"cPesce2", spuntinoExtra:null}
+];
+
+function pick(poolName, week){
+  const pool = POOLS[poolName];
+  return pool[week % pool.length];
+}
+
+// costruisce le 4 settimane (28 giorni)
+const MENU = [];
+for(let w=0; w<4; w++){
+  DAY_TEMPLATE.forEach(t=>{
+    const spuntinoItems = [{t: FRUTTA_ROT[w], q:"1 pugno"}];
+    if(t.spuntinoExtra === "yomo") spuntinoItems.unshift({t:"Yogurt Yomo zero frutti di bosco", q:"1 vasetto 125 g"});
+    MENU.push({
+      day: t.day, short: t.short, week: w,
+      colazione: pick(t.col, w),
+      pranzo: pick(t.pranzo, w),
+      spuntino: { name: t.spuntinoExtra==="yomo" ? "Yogurt e frutta" : "Frutta", items: spuntinoItems },
+      cena: pick(t.cena, w)
+    });
+  });
+}
+const CONDIMENT = "Olio EVO: 2 cucchiai da minestra al giorno, distribuiti sui pasti";
+
+// ---------- STATO (localStorage, condiviso via installazione su entrambi i telefoni) ----------
+const STORE_KEY = "menu-goloso-stato-v2";
+function loadState(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }catch(e){ return {}; } }
+function saveState(s){ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }
+let state = loadState();
+
+function itemKey(dayIdx, meal, i){ return dayIdx+"_"+meal+"_"+i; }
+
+// ---------- RENDER ----------
+let todayIdx = new Date().getDay();
+todayIdx = todayIdx === 0 ? 6 : todayIdx - 1; // 0=Lunedì..6=Domenica
+let activeWeek = 0;
+let activeDayInWeek = todayIdx;
+function globalIdx(){ return activeWeek*7 + activeDayInWeek; }
+
+const weekTabsEl = document.getElementById('weekTabs');
+const tabsEl = document.getElementById('dayTabs');
+const panelEl = document.getElementById('dayPanel');
+
+function renderWeekTabs(){
+  weekTabsEl.innerHTML = "";
+  for(let w=0; w<4; w++){
+    const b = document.createElement('button');
+    b.className = 'week-tab' + (w===activeWeek ? ' active' : '');
+    b.textContent = "Sett. " + (w+1);
+    b.onclick = ()=>{ activeWeek = w; renderWeekTabs(); renderTabs(); renderPanel(); };
+    weekTabsEl.appendChild(b);
+  }
+}
+
+function renderTabs(){
+  tabsEl.innerHTML = "";
+  DAY_TEMPLATE.forEach((d, i)=>{
+    const b = document.createElement('button');
+    b.className = 'day-tab' + (i===activeDayInWeek ? ' active' : '');
+    b.textContent = d.short;
+    b.onclick = ()=>{ activeDayInWeek = i; renderTabs(); renderPanel(); };
+    tabsEl.appendChild(b);
+  });
+}
+
+function mealBlock(dayIdx, mealKey, mealLabel, meal){
+  if(!meal) return "";
+  const wrap = document.createElement('div');
+  wrap.className = 'meal';
+  wrap.innerHTML = `
+    <div class="meal-title"><span class="label">${mealLabel}</span><span class="rule"></span></div>
+    <div class="meal-name">${meal.name}</div>
+  `;
+  meal.items.forEach((it, i)=>{
+    const key = itemKey(dayIdx, mealKey, i);
+    const done = !!state[key];
+    const row = document.createElement('div');
+    row.className = 'item' + (done ? ' done' : '');
+    row.innerHTML = `<div class="stamp"></div><div class="item-text">${it.t} <span class="qty">${it.q}</span></div>`;
+    row.onclick = ()=>{
+      state[key] = !state[key];
+      saveState(state);
+      renderPanel();
+    };
+    wrap.appendChild(row);
+  });
+  if(meal.note){
+    const n = document.createElement('div');
+    n.className = 'note-box';
+    n.textContent = meal.note;
+    wrap.appendChild(n);
+  }
+  return wrap;
+}
+
+function renderPanel(){
+  const gi = globalIdx();
+  const d = MENU[gi];
+  panelEl.innerHTML = "";
+
+  // progresso
+  const allKeys = [];
+  ["colazione","pranzo","spuntino","cena"].forEach(m=>{
+    if(d[m]) d[m].items.forEach((_,i)=> allKeys.push(itemKey(gi,m,i)));
+  });
+  const doneCount = allKeys.filter(k=>state[k]).length;
+  const pct = allKeys.length ? Math.round(doneCount/allKeys.length*100) : 0;
+
+  const progress = document.createElement('div');
+  progress.className = 'progress-row';
+  progress.innerHTML = `<span>${d.day} · Settimana ${d.week+1} · ${doneCount}/${allKeys.length}</span><div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>`;
+  panelEl.appendChild(progress);
+
+  panelEl.appendChild(mealBlock(gi,'colazione','Colazione', d.colazione));
+  panelEl.appendChild(mealBlock(gi,'pranzo','Pranzo', d.pranzo));
+  if(d.spuntino) panelEl.appendChild(mealBlock(gi,'spuntino','Spuntino', d.spuntino));
+  panelEl.appendChild(mealBlock(gi,'cena','Cena', d.cena));
+
+  const cond = document.createElement('div');
+  cond.className = 'condiment';
+  cond.textContent = CONDIMENT;
+  panelEl.appendChild(cond);
+}
+
+renderWeekTabs();
+renderTabs();
+renderPanel();
+
+// ---------- RESET ----------
+document.getElementById('resetBtn').onclick = ()=>{
+  if(confirm("Azzerare tutte le spunte del mese?")){
+    state = {};
+    saveState(state);
+    renderPanel();
+    showToast("Mese azzerato");
+  }
+};
+
+// ---------- CONDIVIDI ----------
+document.getElementById('shareBtn').onclick = async ()=>{
+  const url = window.location.href;
+  if(navigator.share){
+    try{ await navigator.share({ title:"Il Nostro Menù", text:"Il nostro menu settimanale", url }); }
+    catch(e){}
+  } else {
+    await navigator.clipboard.writeText(url);
+    showToast("Link copiato — invialo su WhatsApp");
+  }
+};
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=> t.classList.remove('show'), 2200);
+}
+
+// ---------- PWA INSTALL ----------
+let deferredPrompt;
+const banner = document.getElementById('installBanner');
+window.addEventListener('beforeinstallprompt', (e)=>{
+  e.preventDefault();
+  deferredPrompt = e;
+  if(!localStorage.getItem('install-dismissed')) banner.classList.add('show');
+});
+document.getElementById('installBtn').onclick = async ()=>{
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+  }
+  banner.classList.remove('show');
+};
+document.getElementById('closeInstall').onclick = ()=>{
+  banner.classList.remove('show');
+  localStorage.setItem('install-dismissed','1');
+};
+
+// ---------- SERVICE WORKER ----------
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
