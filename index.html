@@ -466,4 +466,285 @@ for(let w=0; w<4; w++){
     });
   });
 }
-const CONDIMENT = "Olio EVO: 2 cucchiai da minestra al giorno, distr
+const CONDIMENT = "Olio EVO: 2 cucchiai da minestra al giorno, distribuiti sui pasti";
+
+// ---------- LISTA DELLA SPESA ----------
+const CATEGORY_ORDER = ["Frutta e verdura","Pane, cereali e farine","Latticini e uova","Carne, pesce e legumi","Dispensa e condimenti","Altro"];
+
+function categorize(name){
+  const n = name.toLowerCase();
+  if(/(verdura|pomodor|cipolla|aglio|basilico|prezzemolo|frutta)/.test(n)) return CATEGORY_ORDER[0];
+  if(/(pane|farro|orzo|couscous|farina|biscott|fette|cereali|muesli|fiocchi|riso|pasta|patate|grancereale)/.test(n)) return CATEGORY_ORDER[1];
+  if(/(mozzarella|yogurt|latte|formaggio|uovo)/.test(n)) return CATEGORY_ORDER[2];
+  if(/(pollo|tacchino|manzo|hamburger|bresaola|speck|prosciutto|merluzzo|sogliola|orata|salmone|tonno|bastoncini|legum|hummus|polpette|burger|zuppa|bistecca)/.test(n)) return CATEGORY_ORDER[3];
+  if(/(caffè|marmellata|miele|crema novi|olio|sale|capperi|olive|pepe|gocciole)/.test(n)) return CATEGORY_ORDER[4];
+  return CATEGORY_ORDER[5];
+}
+
+function parseQty(q){
+  const m = q.match(/^([\d]+(?:[.,]\d+)?)\s*(.*)$/);
+  return m ? {num: parseFloat(m[1].replace(',','.')), unit: m[2].trim()} : null;
+}
+
+function formatQtys(qtys){
+  const parsed = qtys.map(parseQty);
+  if(parsed.every(p=>p)){
+    const units = [...new Set(parsed.map(p=>p.unit))];
+    if(units.length === 1){
+      const tot = parsed.reduce((s,p)=>s+p.num,0);
+      const totStr = Number.isInteger(tot) ? String(tot) : tot.toFixed(1).replace('.',',');
+      return `${totStr} ${units[0]}`.trim();
+    }
+  }
+  const counts = {};
+  qtys.forEach(q=> counts[q] = (counts[q]||0)+1);
+  return Object.entries(counts).map(([q,c])=> c>1 ? `${c}× ${q}` : q).join(' + ');
+}
+
+function aggregateWeek(w){
+  const map = {};
+  for(let i=0;i<7;i++){
+    const d = MENU[w*7+i];
+    ['colazione','pranzo','spuntino','cena'].forEach(m=>{
+      if(!d[m]) return;
+      d[m].items.forEach(it=>{
+        const key = it.t.trim();
+        if(!map[key]) map[key] = {name:key, category:categorize(key), qtys:[]};
+        map[key].qtys.push(it.q);
+      });
+    });
+  }
+  return map;
+}
+
+function downloadShoppingList(w){
+  const map = aggregateWeek(w);
+  let text = `LISTA DELLA SPESA — Settimana ${w+1}\n${'='.repeat(32)}\n\n`;
+  CATEGORY_ORDER.forEach(cat=>{
+    const items = Object.values(map).filter(i=>i.category===cat);
+    if(!items.length) return;
+    text += `${cat.toUpperCase()}\n`;
+    items.forEach(i=> text += `[ ] ${i.name} — ${formatQtys(i.qtys)}\n`);
+    text += `\n`;
+  });
+  const blob = new Blob([text], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `lista-spesa-settimana-${w+1}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ---------- STATO (localStorage, condiviso via installazione su entrambi i telefoni) ----------
+const STORE_KEY = "menu-goloso-stato-v2";
+function loadState(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }catch(e){ return {}; } }
+function saveState(s){ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }
+let state = loadState();
+
+function itemKey(dayIdx, meal, i){ return dayIdx+"_"+meal+"_"+i; }
+
+// ---------- RENDER ----------
+let todayIdx = new Date().getDay();
+todayIdx = todayIdx === 0 ? 6 : todayIdx - 1; // 0=Lunedì..6=Domenica
+let activeWeek = 0;
+let activeDayInWeek = todayIdx;
+let viewMode = 'menu'; // 'menu' | 'spesa'
+function globalIdx(){ return activeWeek*7 + activeDayInWeek; }
+
+const weekTabsEl = document.getElementById('weekTabs');
+const tabsEl = document.getElementById('dayTabs');
+const panelEl = document.getElementById('dayPanel');
+
+function renderWeekTabs(){
+  weekTabsEl.innerHTML = "";
+  for(let w=0; w<4; w++){
+    const b = document.createElement('button');
+    b.className = 'week-tab' + (w===activeWeek ? ' active' : '');
+    b.textContent = "Sett. " + (w+1);
+    b.onclick = ()=>{ activeWeek = w; renderWeekTabs(); renderTabs(); renderPanel(); };
+    weekTabsEl.appendChild(b);
+  }
+}
+
+function renderTabs(){
+  tabsEl.innerHTML = "";
+  DAY_TEMPLATE.forEach((d, i)=>{
+    const b = document.createElement('button');
+    b.className = 'day-tab' + (i===activeDayInWeek ? ' active' : '');
+    b.textContent = d.short;
+    b.onclick = ()=>{ activeDayInWeek = i; renderTabs(); renderPanel(); };
+    tabsEl.appendChild(b);
+  });
+}
+
+function mealBlock(dayIdx, mealKey, mealLabel, meal){
+  if(!meal) return "";
+  const wrap = document.createElement('div');
+  wrap.className = 'meal';
+  wrap.innerHTML = `
+    <div class="meal-title"><span class="label">${mealLabel}</span><span class="rule"></span></div>
+    <div class="meal-name">${meal.name}</div>
+  `;
+  meal.items.forEach((it, i)=>{
+    const key = itemKey(dayIdx, mealKey, i);
+    const done = !!state[key];
+    const row = document.createElement('div');
+    row.className = 'item' + (done ? ' done' : '');
+    row.innerHTML = `<div class="stamp"></div><div class="item-text">${it.t} <span class="qty">${it.q}</span></div>`;
+    row.onclick = ()=>{
+      state[key] = !state[key];
+      saveState(state);
+      renderPanel();
+    };
+    wrap.appendChild(row);
+  });
+  if(meal.note){
+    const n = document.createElement('div');
+    n.className = 'note-box';
+    n.textContent = meal.note;
+    wrap.appendChild(n);
+  }
+  return wrap;
+}
+
+function renderSpesa(){
+  panelEl.innerHTML = "";
+
+  const topRow = document.createElement('div');
+  topRow.className = 'progress-row';
+  topRow.innerHTML = `<span>Lista spesa · Settimana ${activeWeek+1}</span>`;
+  const dl = document.createElement('button');
+  dl.className = 'btn-ghost';
+  dl.style.flex = '0 0 auto';
+  dl.style.color = 'var(--ink)';
+  dl.style.borderColor = 'var(--basil)';
+  dl.style.background = 'var(--paper-dim)';
+  dl.textContent = '⬇ Scarica';
+  dl.onclick = ()=> { downloadShoppingList(activeWeek); showToast('Lista scaricata'); };
+  topRow.appendChild(dl);
+  panelEl.appendChild(topRow);
+
+  const map = aggregateWeek(activeWeek);
+  CATEGORY_ORDER.forEach(cat=>{
+    const items = Object.values(map).filter(i=>i.category===cat);
+    if(!items.length) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'meal';
+    wrap.innerHTML = `<div class="meal-title"><span class="label">${cat}</span><span class="rule"></span></div>`;
+    items.forEach(i=>{
+      const key = `spesa_${activeWeek}_${i.name}`;
+      const done = !!state[key];
+      const row = document.createElement('div');
+      row.className = 'item' + (done ? ' done' : '');
+      row.innerHTML = `<div class="stamp"></div><div class="item-text">${i.name} <span class="qty">${formatQtys(i.qtys)}</span></div>`;
+      row.onclick = ()=>{ state[key] = !state[key]; saveState(state); renderSpesa(); };
+      wrap.appendChild(row);
+    });
+    panelEl.appendChild(wrap);
+  });
+}
+
+function renderPanel(){
+  if(viewMode === 'spesa'){ renderSpesa(); return; }
+  const gi = globalIdx();
+  const d = MENU[gi];
+  panelEl.innerHTML = "";
+
+  // progresso
+  const allKeys = [];
+  ["colazione","pranzo","spuntino","cena"].forEach(m=>{
+    if(d[m]) d[m].items.forEach((_,i)=> allKeys.push(itemKey(gi,m,i)));
+  });
+  const doneCount = allKeys.filter(k=>state[k]).length;
+  const pct = allKeys.length ? Math.round(doneCount/allKeys.length*100) : 0;
+
+  const progress = document.createElement('div');
+  progress.className = 'progress-row';
+  progress.innerHTML = `<span>${d.day} · Settimana ${d.week+1} · ${doneCount}/${allKeys.length}</span><div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>`;
+  panelEl.appendChild(progress);
+
+  panelEl.appendChild(mealBlock(gi,'colazione','Colazione', d.colazione));
+  panelEl.appendChild(mealBlock(gi,'pranzo','Pranzo', d.pranzo));
+  if(d.spuntino) panelEl.appendChild(mealBlock(gi,'spuntino','Spuntino', d.spuntino));
+  panelEl.appendChild(mealBlock(gi,'cena','Cena', d.cena));
+
+  const cond = document.createElement('div');
+  cond.className = 'condiment';
+  cond.textContent = CONDIMENT;
+  panelEl.appendChild(cond);
+}
+
+renderWeekTabs();
+renderTabs();
+renderPanel();
+
+// ---------- LISTA SPESA TOGGLE ----------
+const spesaBtn = document.getElementById('spesaBtn');
+spesaBtn.onclick = ()=>{
+  viewMode = viewMode === 'spesa' ? 'menu' : 'spesa';
+  spesaBtn.classList.toggle('on', viewMode === 'spesa');
+  spesaBtn.textContent = viewMode === 'spesa' ? '📋 Torna al menu' : '🛒 Lista spesa';
+  tabsEl.style.display = viewMode === 'spesa' ? 'none' : 'flex';
+  renderPanel();
+};
+
+// ---------- RESET ----------
+document.getElementById('resetBtn').onclick = ()=>{
+  if(confirm("Azzerare tutte le spunte del mese?")){
+    state = {};
+    saveState(state);
+    renderPanel();
+    showToast("Mese azzerato");
+  }
+};
+
+// ---------- CONDIVIDI ----------
+document.getElementById('shareBtn').onclick = async ()=>{
+  const url = window.location.href;
+  if(navigator.share){
+    try{ await navigator.share({ title:"Il Nostro Menù", text:"Il nostro menu settimanale", url }); }
+    catch(e){}
+  } else {
+    await navigator.clipboard.writeText(url);
+    showToast("Link copiato — invialo su WhatsApp");
+  }
+};
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=> t.classList.remove('show'), 2200);
+}
+
+// ---------- PWA INSTALL ----------
+let deferredPrompt;
+const banner = document.getElementById('installBanner');
+window.addEventListener('beforeinstallprompt', (e)=>{
+  e.preventDefault();
+  deferredPrompt = e;
+  if(!localStorage.getItem('install-dismissed')) banner.classList.add('show');
+});
+document.getElementById('installBtn').onclick = async ()=>{
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+  }
+  banner.classList.remove('show');
+};
+document.getElementById('closeInstall').onclick = ()=>{
+  banner.classList.remove('show');
+  localStorage.setItem('install-dismissed','1');
+};
+
+// ---------- SERVICE WORKER ----------
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
