@@ -222,6 +222,19 @@
     color:var(--basil);
     font-weight:500;
   }
+  .protein-tag{
+    display:inline-block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:9px;
+    letter-spacing:.06em;
+    background:var(--basil);
+    color:var(--paper);
+    padding:2px 6px;
+    border-radius:8px;
+    margin-right:7px;
+    vertical-align:middle;
+    font-weight:500;
+  }
   .item.done .item-text .qty{color:var(--ink-soft);}
 
   .note-box{
@@ -372,86 +385,86 @@ const POOLS = {
     {name:"Gocciole", items:[{t:"Caffè",q:"1 tazzina"},{t:"Latte",q:"250 ml"},{t:"Gocciole cioccolato Pavesi",q:"3 unità"}]},
     {name:"Biscotti Oro Saiwa", items:[{t:"Caffè",q:"1 tazzina"},{t:"Latte",q:"250 ml"},{t:"Biscotti Oro Saiwa Classico",q:"7 unità"}]}
   ],
-  pMozza:[ // pranzo lunedì
-    {name:"Mozzarella in carrozza di verdure", items:[{t:"Mozzarella di vacca",q:"1 unità"},V.cotta,{t:"Pane integrale",q:"100 g"}], note:"Scalda la mozzarella 30 sec e adagiala sulla verdura ancora calda."},
-    {name:"Mozzarella con couscous alle erbe", items:[{t:"Mozzarella di vacca",q:"1 unità"},V.cotta,{t:"Couscous, crudo",q:"70 g"}]},
-    {name:"Mozzarella con insalata di orzo", items:[{t:"Mozzarella di vacca",q:"1 unità"},V.cotta,{t:"Orzo o farro",q:"70 g"}]},
-    {name:"Mozzarella con riso freddo condito", items:[{t:"Mozzarella di vacca",q:"1 unità"},V.cotta,{t:"Pasta o riso",q:"70 g"}]}
+  pMozza:[ // pranzo lunedì — proteina ruota: mozzarella/formaggio spalmabile/formaggio stagionato/legumi
+    {name:"Mozzarella in carrozza di verdure", items:[{t:"Mozzarella di vacca",q:"1 unità",protein:true},V.cotta,{t:"Pane integrale",q:"100 g"}], note:"Scalda la mozzarella 30 sec e adagiala sulla verdura ancora calda."},
+    {name:"Formaggio spalmabile con pasta fredda", items:[{t:"Formaggio Spalmabile (tipo Philadelphia)",q:"100 g",protein:true},V.crudaMista,{t:"Pasta o riso",q:"70 g"}]},
+    {name:"Scaglie di formaggio stagionato con couscous", items:[{t:"Formaggio stagionato",q:"50 g",protein:true},V.crudaFoglia,{t:"Couscous, crudo",q:"70 g"}]},
+    {name:"Farro con legumi e verdure", items:[{t:"Legumi",q:"150 g",protein:true},V.cotta,{t:"Orzo o farro",q:"70 g"}]}
   ],
   pSalumi:[ // pranzo martedì
-    {name:"Bresaola e hummus", items:[{t:"Bresaola",q:"80 g"},{t:"Hummus di legumi",q:"150 g"},{t:"Pane integrale",q:"100 g"}]},
-    {name:"Speck e zuppa di legumi", items:[{t:"Speck",q:"80 g"},{t:"Zuppa di legumi",q:"150 g"},{t:"Pane integrale",q:"100 g"}]},
-    {name:"Prosciutto crudo e insalata di legumi", items:[{t:"Prosciutto crudo",q:"80 g"},{t:"Insalata di legumi",q:"150 g"},{t:"Pane comune",q:"100 g"}]},
-    {name:"Prosciutto cotto e burger di legumi", items:[{t:"Prosciutto cotto",q:"80 g"},{t:"Burger di legumi",q:"150 g"},{t:"Pan di Casa",q:"2 fette"}]}
+    {name:"Bresaola e hummus", items:[{t:"Bresaola",q:"80 g",protein:true},{t:"Hummus di legumi",q:"150 g"},{t:"Pane integrale",q:"100 g"}]},
+    {name:"Speck e zuppa di legumi", items:[{t:"Speck",q:"80 g",protein:true},{t:"Zuppa di legumi",q:"150 g"},{t:"Pane integrale",q:"100 g"}]},
+    {name:"Prosciutto crudo e insalata di legumi", items:[{t:"Prosciutto crudo",q:"80 g",protein:true},{t:"Insalata di legumi",q:"150 g"},{t:"Pane comune",q:"100 g"}]},
+    {name:"Prosciutto cotto e burger di legumi", items:[{t:"Prosciutto cotto",q:"80 g",protein:true},{t:"Burger di legumi",q:"150 g"},{t:"Pan di Casa",q:"2 fette"}]}
   ],
   pCarne:[ // pranzo mercoledì
-    {name:"Pollo ai ferri con farro", items:[{t:"Petto di pollo ai ferri",q:"150 g"},V.crudaMista,{t:"Farro",q:"70 g"}]},
-    {name:"Tacchino ai ferri con orzo", items:[{t:"Petto di tacchino ai ferri",q:"150 g"},V.crudaMista,{t:"Orzo",q:"70 g"}]},
-    {name:"Bistecca ai ferri con patate", items:[{t:"Bistecca di manzo ai ferri",q:"150 g"},V.crudaFoglia,{t:"Patate",q:"250 g"}]},
-    {name:"Hamburger con couscous", items:[{t:"Hamburger da polpa scelta",q:"1 unità"},V.crudaMista,{t:"Couscous, crudo",q:"70 g"}]}
+    {name:"Pollo ai ferri con farro", items:[{t:"Petto di pollo ai ferri",q:"150 g",protein:true},V.crudaMista,{t:"Farro",q:"70 g"}]},
+    {name:"Tacchino ai ferri con verdure cotte", items:[{t:"Petto di tacchino ai ferri",q:"150 g",protein:true},V.cotta,{t:"Orzo",q:"70 g"}]},
+    {name:"Bistecca ai ferri con patate", items:[{t:"Bistecca di manzo ai ferri",q:"150 g",protein:true},V.crudaFoglia,{t:"Patate",q:"250 g"}]},
+    {name:"Hamburger con couscous", items:[{t:"Hamburger da polpa scelta",q:"1 unità",protein:true},V.crudaMista,{t:"Couscous, crudo",q:"70 g"}]}
   ],
-  pFarinata:[ // pranzo giovedì
-    {name:"Mozzarella con farinata di ceci", items:[{t:"Mozzarella di vacca",q:"1 unità"},V.cotta,{t:"Farinata di ceci",q:"50 g"}]},
-    {name:"Mozzarella con farinata al rosmarino", items:[{t:"Mozzarella di vacca",q:"1 unità"},V.cotta,{t:"Farinata di ceci al rosmarino",q:"50 g"}]},
-    {name:"Mozzarella con farinata e cipolla", items:[{t:"Mozzarella di vacca",q:"1 unità"},V.cotta,{t:"Farinata di ceci e cipolla",q:"50 g"}]},
-    {name:"Mozzarella con farinata e pepe nero", items:[{t:"Mozzarella di vacca",q:"1 unità"},V.cotta,{t:"Farinata di ceci e pepe nero",q:"50 g"}]}
+  pFarinata:[ // pranzo giovedì — proteina ruota (sfalsata rispetto a pMozza/cMozza)
+    {name:"Farinata con formaggio spalmabile", items:[{t:"Formaggio Spalmabile (tipo Philadelphia)",q:"100 g",protein:true},V.crudaMista,{t:"Farinata di ceci",q:"50 g"}]},
+    {name:"Farinata al rosmarino con formaggio stagionato", items:[{t:"Formaggio stagionato",q:"50 g",protein:true},V.cotta,{t:"Farinata di ceci al rosmarino",q:"50 g"}]},
+    {name:"Farinata e cipolla con legumi", items:[{t:"Legumi",q:"150 g",protein:true},V.crudaFoglia,{t:"Farinata di ceci e cipolla",q:"50 g"}]},
+    {name:"Farinata al pepe nero con mozzarella", items:[{t:"Mozzarella di vacca",q:"1 unità",protein:true},V.cotta,{t:"Farinata di ceci e pepe nero",q:"50 g"}]}
   ],
   pLegumi:[ // pranzo venerdì
-    {name:"Burger di legumi", items:[{t:"Burger di legumi",q:"150 g"},V.crudaFoglia,{t:"Pane integrale",q:"100 g"}], note:"Frulla i legumi con spezie a piacere, forma i burger e cuoci in padella o al forno."},
-    {name:"Polpette di legumi", items:[{t:"Polpette di legumi",q:"150 g"},V.crudaMista,{t:"Pane integrale",q:"100 g"}]},
-    {name:"Hummus di ceci", items:[{t:"Hummus di ceci",q:"150 g"},V.crudaFoglia,{t:"Pane comune",q:"100 g"}]},
-    {name:"Zuppa di lenticchie", items:[{t:"Zuppa di lenticchie",q:"150 g"},V.crudaMista,{t:"Pan di Casa",q:"2 fette"}]}
+    {name:"Burger di legumi", items:[{t:"Burger di legumi",q:"150 g",protein:true},V.crudaFoglia,{t:"Pane integrale",q:"100 g"}], note:"Frulla i legumi con spezie a piacere, forma i burger e cuoci in padella o al forno."},
+    {name:"Polpette di legumi con pasta", items:[{t:"Polpette di legumi",q:"150 g",protein:true},V.cotta,{t:"Pasta o riso",q:"70 g"}]},
+    {name:"Hummus di ceci", items:[{t:"Hummus di ceci",q:"150 g",protein:true},V.crudaMista,{t:"Pane comune",q:"100 g"}]},
+    {name:"Zuppa di lenticchie", items:[{t:"Zuppa di lenticchie",q:"150 g",protein:true},V.cotta,{t:"Pan di Casa",q:"2 fette"}]}
   ],
   pTonno:[ // pranzo sabato
-    {name:"Tonno e pane croccante", items:[{t:"Tonno sott'olio sgocciolato",q:"80 g"},V.cotta,{t:"Pane comune tostato",q:"100 g"}]},
-    {name:"Bastoncini di pesce", items:[{t:"Bastoncini di pesce Findus Omega 3",q:"4 unità"},V.cotta,{t:"Patate",q:"250 g"}]},
-    {name:"Salmone affumicato", items:[{t:"Salmone affumicato",q:"80 g"},V.cotta,{t:"Pane integrale",q:"100 g"}]},
-    {name:"Tonno con farinata", items:[{t:"Tonno sott'olio sgocciolato",q:"80 g"},V.cotta,{t:"Farinata di ceci",q:"50 g"}]}
+    {name:"Tonno e pane croccante", items:[{t:"Tonno sott'olio sgocciolato",q:"80 g",protein:true},V.cotta,{t:"Pane comune tostato",q:"100 g"}]},
+    {name:"Bastoncini di pesce", items:[{t:"Bastoncini di pesce Findus Omega 3",q:"4 unità",protein:true},V.crudaMista,{t:"Patate",q:"250 g"}]},
+    {name:"Salmone affumicato", items:[{t:"Salmone affumicato",q:"80 g",protein:true},V.crudaFoglia,{t:"Pane integrale",q:"100 g"}]},
+    {name:"Tonno con farinata", items:[{t:"Tonno sott'olio sgocciolato",q:"80 g",protein:true},V.cotta,{t:"Farinata di ceci",q:"50 g"}]}
   ],
   pCarne2:[ // pranzo domenica
-    {name:"Bistecca con farro", items:[{t:"Bistecca di manzo ai ferri",q:"150 g"},V.crudaMista,{t:"Farro",q:"70 g"}]},
-    {name:"Pollo con patate", items:[{t:"Petto di pollo ai ferri",q:"150 g"},V.crudaMista,{t:"Patate",q:"250 g"}]},
-    {name:"Hamburger con riso", items:[{t:"Hamburger da polpa scelta",q:"1 unità"},V.crudaFoglia,{t:"Pasta o riso",q:"70 g"}]},
-    {name:"Tacchino con couscous", items:[{t:"Petto di tacchino ai ferri",q:"150 g"},V.crudaMista,{t:"Couscous, crudo",q:"70 g"}]}
+    {name:"Bistecca con farro", items:[{t:"Bistecca di manzo ai ferri",q:"150 g",protein:true},V.crudaMista,{t:"Farro",q:"70 g"}]},
+    {name:"Pollo con patate e verdure cotte", items:[{t:"Petto di pollo ai ferri",q:"150 g",protein:true},V.cotta,{t:"Patate",q:"250 g"}]},
+    {name:"Hamburger con riso", items:[{t:"Hamburger da polpa scelta",q:"1 unità",protein:true},V.crudaFoglia,{t:"Pasta o riso",q:"70 g"}]},
+    {name:"Tacchino con couscous", items:[{t:"Petto di tacchino ai ferri",q:"150 g",protein:true},V.crudaMista,{t:"Couscous, crudo",q:"70 g"}]}
   ],
   cLegumi:[ // cena lunedì
-    {name:"Zuppa di legumi", items:[{t:"Legumi",q:"150 g"},V.cotta,{t:"Pane integrale",q:"100 g"}]},
-    {name:"Hummus di legumi", items:[{t:"Hummus di legumi",q:"150 g"},V.cotta,{t:"Pane integrale",q:"100 g"}]},
-    {name:"Polpette di legumi", items:[{t:"Polpette di legumi",q:"150 g"},V.cotta,{t:"Pane comune",q:"100 g"}]},
-    {name:"Burger di legumi", items:[{t:"Burger di legumi",q:"150 g"},V.cotta,{t:"Pan di Casa",q:"2 fette"}]}
+    {name:"Zuppa di legumi", items:[{t:"Legumi",q:"150 g",protein:true},V.cotta,{t:"Pane integrale",q:"100 g"}]},
+    {name:"Hummus di legumi", items:[{t:"Hummus di legumi",q:"150 g",protein:true},V.crudaMista,{t:"Pane integrale",q:"100 g"}]},
+    {name:"Polpette di legumi", items:[{t:"Polpette di legumi",q:"150 g",protein:true},V.crudaFoglia,{t:"Pane comune",q:"100 g"}]},
+    {name:"Burger di legumi", items:[{t:"Burger di legumi",q:"150 g",protein:true},V.cotta,{t:"Pan di Casa",q:"2 fette"}]}
   ],
   cPesce:[ // cena martedì
-    {name:"Merluzzo mediterraneo", items:[{t:"Filetti di merluzzo con pomodori, olive e capperi",q:"400 g"},V.cotta], note:"Soffriggi cipolla e aglio, aggiungi pomodoro, filetti, olive e capperi. Cuoci a fiamma bassa col coperchio."},
-    {name:"Sogliola al vapore", items:[{t:"Sogliola al vapore con olio e prezzemolo",q:"180 g"},V.cotta,{t:"Pane integrale",q:"100 g"}]},
-    {name:"Merluzzo al basilico", items:[{t:"Filetti di merluzzo con pomodori, olive e capperi (variante al basilico)",q:"400 g"},V.cotta]},
-    {name:"Orata al vapore", items:[{t:"Orata al vapore con olio e prezzemolo",q:"180 g"},V.cotta,{t:"Pane integrale",q:"100 g"}]}
+    {name:"Merluzzo mediterraneo", items:[{t:"Filetti di merluzzo con pomodori, olive e capperi",q:"400 g",protein:true},V.cotta], note:"Soffriggi cipolla e aglio, aggiungi pomodoro, filetti, olive e capperi. Cuoci a fiamma bassa col coperchio."},
+    {name:"Sogliola al vapore", items:[{t:"Sogliola al vapore con olio e prezzemolo",q:"180 g",protein:true},V.crudaMista,{t:"Pane integrale",q:"100 g"}]},
+    {name:"Merluzzo al basilico", items:[{t:"Filetti di merluzzo con pomodori, olive e capperi (variante al basilico)",q:"400 g",protein:true},V.crudaFoglia]},
+    {name:"Orata al vapore", items:[{t:"Orata al vapore con olio e prezzemolo",q:"180 g",protein:true},V.cotta,{t:"Pane integrale",q:"100 g"}]}
   ],
-  cMozza:[ // cena mercoledì
-    {name:"Mozzarella semplice", items:[{t:"Mozzarella di vacca",q:"1 unità"},V.cotta,{t:"Pane integrale",q:"100 g"}]},
-    {name:"Mozzarella con couscous", items:[{t:"Mozzarella di vacca",q:"1 unità"},V.cotta,{t:"Couscous, crudo",q:"70 g"}]},
-    {name:"Mozzarella con orzo", items:[{t:"Mozzarella di vacca",q:"1 unità"},V.cotta,{t:"Orzo o farro",q:"70 g"}]},
-    {name:"Mozzarella con patate", items:[{t:"Mozzarella di vacca",q:"1 unità"},V.cotta,{t:"Patate",q:"250 g"}]}
+  cMozza:[ // cena mercoledì — proteina ruota (sfalsata rispetto a pMozza/pFarinata)
+    {name:"Scaglie di formaggio stagionato", items:[{t:"Formaggio stagionato",q:"50 g",protein:true},V.crudaFoglia,{t:"Pane integrale",q:"100 g"}]},
+    {name:"Pasta con legumi", items:[{t:"Legumi",q:"150 g",protein:true},V.cotta,{t:"Pasta o riso",q:"70 g"}]},
+    {name:"Mozzarella con patate al forno", items:[{t:"Mozzarella di vacca",q:"1 unità",protein:true},V.crudaMista,{t:"Patate",q:"250 g"}]},
+    {name:"Formaggio spalmabile con couscous", items:[{t:"Formaggio Spalmabile (tipo Philadelphia)",q:"100 g",protein:true},V.cotta,{t:"Couscous, crudo",q:"70 g"}]}
   ],
   cUovo:[ // cena giovedì
-    {name:"Frittata", items:[{t:"Uovo di gallina",q:"2 unità"},V.cotta,{t:"Pane integrale",q:"100 g"}]},
-    {name:"Uova sode", items:[{t:"Uovo di gallina (sode)",q:"2 unità"},V.cotta,{t:"Pane integrale",q:"100 g"}]},
-    {name:"Uova all'occhio di bue", items:[{t:"Uovo di gallina",q:"2 unità"},V.cotta,{t:"Pane comune",q:"100 g"}]},
-    {name:"Frittata alle erbe", items:[{t:"Uovo di gallina",q:"2 unità"},V.cotta,{t:"Pan di Casa",q:"2 fette"}]}
+    {name:"Frittata", items:[{t:"Uovo di gallina",q:"2 unità",protein:true},V.cotta,{t:"Pane integrale",q:"100 g"}]},
+    {name:"Uova sode", items:[{t:"Uovo di gallina (sode)",q:"2 unità",protein:true},V.crudaMista,{t:"Pane integrale",q:"100 g"}]},
+    {name:"Uova all'occhio di bue", items:[{t:"Uovo di gallina",q:"2 unità",protein:true},V.crudaFoglia,{t:"Pane comune",q:"100 g"}]},
+    {name:"Frittata alle erbe", items:[{t:"Uovo di gallina",q:"2 unità",protein:true},V.cotta,{t:"Pan di Casa",q:"2 fette"}]}
   ],
   cCarne:[ // cena venerdì
-    {name:"Pollo ai ferri", items:[{t:"Petto di pollo ai ferri",q:"150 g"},V.cotta,{t:"Pane integrale",q:"100 g"}]},
-    {name:"Tacchino con patate", items:[{t:"Petto di tacchino ai ferri",q:"150 g"},V.cotta,{t:"Patate",q:"250 g"}]},
-    {name:"Bistecca ai ferri", items:[{t:"Bistecca di manzo ai ferri",q:"150 g"},V.cotta,{t:"Pane comune",q:"100 g"}]},
-    {name:"Hamburger con couscous", items:[{t:"Hamburger da polpa scelta",q:"1 unità"},V.cotta,{t:"Couscous, crudo",q:"70 g"}]}
+    {name:"Pollo ai ferri", items:[{t:"Petto di pollo ai ferri",q:"150 g",protein:true},V.cotta,{t:"Pane integrale",q:"100 g"}]},
+    {name:"Tacchino con patate", items:[{t:"Petto di tacchino ai ferri",q:"150 g",protein:true},V.crudaMista,{t:"Patate",q:"250 g"}]},
+    {name:"Bistecca con pasta", items:[{t:"Bistecca di manzo ai ferri",q:"150 g",protein:true},V.crudaFoglia,{t:"Pasta o riso",q:"70 g"}]},
+    {name:"Hamburger con couscous", items:[{t:"Hamburger da polpa scelta",q:"1 unità",protein:true},V.cotta,{t:"Couscous, crudo",q:"70 g"}]}
   ],
   cPizza:[ // cena sabato — fissa, stessa ogni settimana
-    {name:"🍕 Serata libera", items:[{t:"Pizza margherita da pizzeria",q:"1 unità"}], note:"Ricordati di dimezzare l'olio EVO giornaliero, è già nell'impasto."}
+    {name:"🍕 Serata libera", items:[{t:"Pizza margherita da pizzeria",q:"1 unità",protein:true}], note:"Ricordati di dimezzare l'olio EVO giornaliero, è già nell'impasto."}
   ],
   cPesce2:[ // cena domenica
-    {name:"Merluzzo al vapore", items:[{t:"Merluzzo al vapore con olio e prezzemolo",q:"180 g"},V.cotta]},
-    {name:"Sogliola mediterranea", items:[{t:"Filetti di sogliola con pomodori, olive e capperi",q:"400 g"},V.cotta]},
-    {name:"Orata al vapore", items:[{t:"Orata al vapore con olio e prezzemolo",q:"180 g"},V.cotta]},
-    {name:"Merluzzo mediterraneo", items:[{t:"Filetti di merluzzo con pomodori, olive e capperi",q:"400 g"},V.cotta]}
+    {name:"Merluzzo al vapore", items:[{t:"Merluzzo al vapore con olio e prezzemolo",q:"180 g",protein:true},V.cotta]},
+    {name:"Sogliola mediterranea", items:[{t:"Filetti di sogliola con pomodori, olive e capperi",q:"400 g",protein:true},V.crudaMista]},
+    {name:"Orata al vapore", items:[{t:"Orata al vapore con olio e prezzemolo",q:"180 g",protein:true},V.crudaFoglia]},
+    {name:"Merluzzo mediterraneo", items:[{t:"Filetti di merluzzo con pomodori, olive e capperi",q:"400 g",protein:true},V.cotta]}
   ]
 };
 
@@ -592,7 +605,7 @@ function mealBlock(dayIdx, mealKey, mealLabel, meal){
     const done = !!state[key];
     const row = document.createElement('div');
     row.className = 'item' + (done ? ' done' : '');
-    row.innerHTML = `<div class="stamp"></div><div class="item-text">${it.t} <span class="qty">${it.q}</span></div>`;
+    row.innerHTML = `<div class="stamp"></div><div class="item-text">${it.protein ? '<span class="protein-tag">PROTEINA</span>' : ''}${it.t} <span class="qty">${it.q}</span></div>`;
     row.onclick = ()=>{
       state[key] = !state[key];
       saveState(state);
