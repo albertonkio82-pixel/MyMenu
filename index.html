@@ -66,21 +66,23 @@
     letter-spacing:-.01em;
   }
   header p{margin:0; font-size:13.5px; opacity:.85;}
-  .header-actions{display:flex; gap:8px; margin-top:14px;}
+  .header-actions{display:flex; gap:6px; margin-top:14px;}
   .btn-ghost{
     flex:1;
     background:rgba(247,240,222,.12);
     border:1px solid rgba(247,240,222,.35);
     color:var(--paper);
-    padding:9px 10px;
+    padding:9px 6px;
     border-radius:10px;
     font-family:'Work Sans',sans-serif;
-    font-size:13px;
+    font-size:12.5px;
     font-weight:500;
     cursor:pointer;
-    display:flex; align-items:center; justify-content:center; gap:6px;
+    display:flex; align-items:center; justify-content:center; gap:5px;
+    white-space:nowrap;
   }
   .btn-ghost:active{background:rgba(247,240,222,.22);}
+  .btn-ghost.on{background:var(--ochre); border-color:var(--ochre); color:var(--ink);}
 
   /* TABS SETTIMANE */
   .week-tabs{
@@ -298,8 +300,9 @@
     <h1>Il Nostro Menù</h1>
     <p>Stessi alimenti e porzioni del piano nutrizionale — ricette diverse ogni settimana</p>
     <div class="header-actions">
-      <button class="btn-ghost" id="shareBtn">↗ Condividi con Laura</button>
-      <button class="btn-ghost" id="resetBtn">↺ Azzera settimana</button>
+      <button class="btn-ghost" id="shareBtn">↗ Condividi</button>
+      <button class="btn-ghost" id="spesaBtn">🛒 Lista spesa</button>
+      <button class="btn-ghost" id="resetBtn">↺ Reset</button>
     </div>
   </header>
 
@@ -463,168 +466,4 @@ for(let w=0; w<4; w++){
     });
   });
 }
-const CONDIMENT = "Olio EVO: 2 cucchiai da minestra al giorno, distribuiti sui pasti";
-
-// ---------- STATO (localStorage, condiviso via installazione su entrambi i telefoni) ----------
-const STORE_KEY = "menu-goloso-stato-v2";
-function loadState(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }catch(e){ return {}; } }
-function saveState(s){ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }
-let state = loadState();
-
-function itemKey(dayIdx, meal, i){ return dayIdx+"_"+meal+"_"+i; }
-
-// ---------- RENDER ----------
-let todayIdx = new Date().getDay();
-todayIdx = todayIdx === 0 ? 6 : todayIdx - 1; // 0=Lunedì..6=Domenica
-let activeWeek = 0;
-let activeDayInWeek = todayIdx;
-function globalIdx(){ return activeWeek*7 + activeDayInWeek; }
-
-const weekTabsEl = document.getElementById('weekTabs');
-const tabsEl = document.getElementById('dayTabs');
-const panelEl = document.getElementById('dayPanel');
-
-function renderWeekTabs(){
-  weekTabsEl.innerHTML = "";
-  for(let w=0; w<4; w++){
-    const b = document.createElement('button');
-    b.className = 'week-tab' + (w===activeWeek ? ' active' : '');
-    b.textContent = "Sett. " + (w+1);
-    b.onclick = ()=>{ activeWeek = w; renderWeekTabs(); renderTabs(); renderPanel(); };
-    weekTabsEl.appendChild(b);
-  }
-}
-
-function renderTabs(){
-  tabsEl.innerHTML = "";
-  DAY_TEMPLATE.forEach((d, i)=>{
-    const b = document.createElement('button');
-    b.className = 'day-tab' + (i===activeDayInWeek ? ' active' : '');
-    b.textContent = d.short;
-    b.onclick = ()=>{ activeDayInWeek = i; renderTabs(); renderPanel(); };
-    tabsEl.appendChild(b);
-  });
-}
-
-function mealBlock(dayIdx, mealKey, mealLabel, meal){
-  if(!meal) return "";
-  const wrap = document.createElement('div');
-  wrap.className = 'meal';
-  wrap.innerHTML = `
-    <div class="meal-title"><span class="label">${mealLabel}</span><span class="rule"></span></div>
-    <div class="meal-name">${meal.name}</div>
-  `;
-  meal.items.forEach((it, i)=>{
-    const key = itemKey(dayIdx, mealKey, i);
-    const done = !!state[key];
-    const row = document.createElement('div');
-    row.className = 'item' + (done ? ' done' : '');
-    row.innerHTML = `<div class="stamp"></div><div class="item-text">${it.t} <span class="qty">${it.q}</span></div>`;
-    row.onclick = ()=>{
-      state[key] = !state[key];
-      saveState(state);
-      renderPanel();
-    };
-    wrap.appendChild(row);
-  });
-  if(meal.note){
-    const n = document.createElement('div');
-    n.className = 'note-box';
-    n.textContent = meal.note;
-    wrap.appendChild(n);
-  }
-  return wrap;
-}
-
-function renderPanel(){
-  const gi = globalIdx();
-  const d = MENU[gi];
-  panelEl.innerHTML = "";
-
-  // progresso
-  const allKeys = [];
-  ["colazione","pranzo","spuntino","cena"].forEach(m=>{
-    if(d[m]) d[m].items.forEach((_,i)=> allKeys.push(itemKey(gi,m,i)));
-  });
-  const doneCount = allKeys.filter(k=>state[k]).length;
-  const pct = allKeys.length ? Math.round(doneCount/allKeys.length*100) : 0;
-
-  const progress = document.createElement('div');
-  progress.className = 'progress-row';
-  progress.innerHTML = `<span>${d.day} · Settimana ${d.week+1} · ${doneCount}/${allKeys.length}</span><div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>`;
-  panelEl.appendChild(progress);
-
-  panelEl.appendChild(mealBlock(gi,'colazione','Colazione', d.colazione));
-  panelEl.appendChild(mealBlock(gi,'pranzo','Pranzo', d.pranzo));
-  if(d.spuntino) panelEl.appendChild(mealBlock(gi,'spuntino','Spuntino', d.spuntino));
-  panelEl.appendChild(mealBlock(gi,'cena','Cena', d.cena));
-
-  const cond = document.createElement('div');
-  cond.className = 'condiment';
-  cond.textContent = CONDIMENT;
-  panelEl.appendChild(cond);
-}
-
-renderWeekTabs();
-renderTabs();
-renderPanel();
-
-// ---------- RESET ----------
-document.getElementById('resetBtn').onclick = ()=>{
-  if(confirm("Azzerare tutte le spunte del mese?")){
-    state = {};
-    saveState(state);
-    renderPanel();
-    showToast("Mese azzerato");
-  }
-};
-
-// ---------- CONDIVIDI ----------
-document.getElementById('shareBtn').onclick = async ()=>{
-  const url = window.location.href;
-  if(navigator.share){
-    try{ await navigator.share({ title:"Il Nostro Menù", text:"Il nostro menu settimanale", url }); }
-    catch(e){}
-  } else {
-    await navigator.clipboard.writeText(url);
-    showToast("Link copiato — invialo su WhatsApp");
-  }
-};
-
-function showToast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(()=> t.classList.remove('show'), 2200);
-}
-
-// ---------- PWA INSTALL ----------
-let deferredPrompt;
-const banner = document.getElementById('installBanner');
-window.addEventListener('beforeinstallprompt', (e)=>{
-  e.preventDefault();
-  deferredPrompt = e;
-  if(!localStorage.getItem('install-dismissed')) banner.classList.add('show');
-});
-document.getElementById('installBtn').onclick = async ()=>{
-  if(deferredPrompt){
-    deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    deferredPrompt = null;
-  }
-  banner.classList.remove('show');
-};
-document.getElementById('closeInstall').onclick = ()=>{
-  banner.classList.remove('show');
-  localStorage.setItem('install-dismissed','1');
-};
-
-// ---------- SERVICE WORKER ----------
-if('serviceWorker' in navigator){
-  window.addEventListener('load', ()=>{
-    navigator.serviceWorker.register('sw.js').catch(()=>{});
-  });
-}
-</script>
-</body>
-</html>
+const CONDIMENT = "Olio EVO: 2 cucchiai da minestra al giorno, distr
