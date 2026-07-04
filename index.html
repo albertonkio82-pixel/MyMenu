@@ -391,11 +391,11 @@ const POOLS = {
     {name:"Scaglie di formaggio stagionato con couscous", items:[{t:"Formaggio stagionato",q:"50 g",protein:true},V.crudaFoglia,{t:"Couscous, crudo",q:"70 g"}]},
     {name:"Farro con legumi e verdure", items:[{t:"Legumi",q:"150 g",protein:true},V.cotta,{t:"Orzo o farro",q:"70 g"}]}
   ],
-  pSalumi:[ // pranzo martedì
-    {name:"Bresaola con insalata di pasta e hummus", items:[{t:"Bresaola",q:"80 g",protein:true},{t:"Hummus di legumi",q:"150 g"},{t:"Pasta o riso",q:"70 g"}]},
-    {name:"Speck e zuppa di legumi", items:[{t:"Speck",q:"80 g",protein:true},{t:"Zuppa di legumi",q:"150 g"},{t:"Pane integrale",q:"100 g"}]},
-    {name:"Prosciutto crudo e insalata di legumi", items:[{t:"Prosciutto crudo",q:"80 g",protein:true},{t:"Insalata di legumi",q:"150 g"},{t:"Pane comune",q:"100 g"}]},
-    {name:"Prosciutto cotto e burger di legumi", items:[{t:"Prosciutto cotto",q:"80 g",protein:true},{t:"Burger di legumi",q:"150 g"},{t:"Pan di Casa",q:"2 fette"}]}
+  pSalumi:[ // pranzo martedì — salumi e legumi sono alternative, non stanno mai insieme
+    {name:"Bresaola con pasta fredda e verdure", items:[{t:"Bresaola",q:"80 g",protein:true},V.cotta,{t:"Pasta o riso",q:"70 g"}]},
+    {name:"Speck con verdure e pane integrale", items:[{t:"Speck",q:"80 g",protein:true},V.crudaMista,{t:"Pane integrale",q:"100 g"}]},
+    {name:"Prosciutto crudo con insalata e pane", items:[{t:"Prosciutto crudo",q:"80 g",protein:true},V.crudaFoglia,{t:"Pane comune",q:"100 g"}]},
+    {name:"Insalata di legumi con verdure cotte", items:[{t:"Legumi",q:"150 g",protein:true},V.cotta,{t:"Pan di Casa",q:"2 fette"}]}
   ],
   pCarne:[ // pranzo mercoledì
     {name:"Pollo ai ferri con farro", items:[{t:"Petto di pollo ai ferri",q:"150 g",protein:true},V.crudaMista,{t:"Farro",q:"70 g"}]},
